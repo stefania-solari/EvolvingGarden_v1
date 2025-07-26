@@ -24,6 +24,10 @@ namespace XRMultiplayer
         [SerializeField] Sprite m_MutedSprite;
         [SerializeField] Sprite m_UnmutedSprite;
 
+        [Header("Environment Settings")]
+        [SerializeField] TMP_InputField m_SizeInput;
+        [SerializeField] TMP_InputField m_ObjectCountInput;
+
         [Header("Panel Objects")]
         [SerializeField] GameObject m_CustomizationPanel;
         [SerializeField] GameObject m_ConnectionPanel;
@@ -41,6 +45,11 @@ namespace XRMultiplayer
             m_VoiceChatManager = FindFirstObjectByType<VoiceChatManager>();
             m_VoiceChatManager.selfMuted.Subscribe(MutedChanged);
             SetupPlayerDefaults();
+
+            if (m_SizeInput != null)
+                m_SizeInput.text = EnvironmentParameters.Size.ToString();
+            if (m_ObjectCountInput != null)
+                m_ObjectCountInput.text = EnvironmentParameters.ObjectCount.ToString();
         }
 
         private void Start()
@@ -64,6 +73,8 @@ namespace XRMultiplayer
         {
             XRINetworkGameManager.LocalPlayerName.Value = m_DefaultPlayerName;
             XRINetworkGameManager.LocalPlayerColor.Value = m_PlayerColors[Random.Range(0, m_PlayerColors.Length)];
+            EnvironmentParameters.Size = 10f;
+            EnvironmentParameters.ObjectCount = 10;
         }
 
         void SetPlayerName(string name)
@@ -102,6 +113,18 @@ namespace XRMultiplayer
         {
             m_CustomizationPanel.SetActive(false);
             m_ConnectionPanel.SetActive(true);
+        }
+
+        public void SetEnvironmentSize(string value)
+        {
+            if (float.TryParse(value, out float result))
+                EnvironmentParameters.Size = result;
+        }
+
+        public void SetObjectCount(string value)
+        {
+            if (int.TryParse(value, out int result))
+                EnvironmentParameters.ObjectCount = result;
         }
 
         void OnConnected(bool connected)
